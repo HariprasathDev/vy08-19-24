@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import Input from '../Fromfield/Inputfield';
 import RasiGrid from '../HoroDetails/RasiGrid';
@@ -128,6 +128,7 @@ const ProfileForm = () => {
   const [selectedBrotherValue, setSelectedBrotherValue] = useState<string>('');
   const [brotherMarriedValues, setBrotherMarriedValues] = useState<string[]>([]);
   const [selectedBrotherMarriedValue, setSelectedBrotherMarriedValue] = useState<string>('');
+  const [brotherError, setBrotherError] = useState<string>('');
 
   const onRasiContentsChange = (newContent: React.SetStateAction<never[]>) => {
     setRasiContent(newContent);
@@ -138,12 +139,46 @@ const ProfileForm = () => {
   };
 
 
-  
-
-  //error
 
 
-  
+  const refs = {
+    temp_profileid: useRef(null),
+    Gender: useRef(null),
+    Mobile_no: useRef(null),
+    EmailId: useRef(null),
+    Password: useRef(null),
+    Profile_marital_status: useRef(null),
+    Profile_dob: useRef(null),
+    Profile_complexion: useRef(null),
+    Profile_address: useRef(null),
+    Profile_country: useRef(null),
+    Profile_state: useRef(null),
+    Profile_city: useRef(null),
+    Profile_pincode: useRef(null),
+  };
+
+  // const handleInputChange = (e, section) => {
+  //   // Your input handling logic here
+  // };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    // Example validation logic
+    let firstErrorField = null;
+
+    if (!yourValidationFunction('temp_profileid')) {
+      firstErrorField = firstErrorField || refs.temp_profileid;
+    }
+    if (!yourValidationFunction('Gender')) {
+      firstErrorField = firstErrorField || refs.Gender;
+    }
+    // Add similar checks for all other fields...
+
+    if (firstErrorField) {
+      firstErrorField.current.focus();
+    }
+  };
 
   const validateField = (name, value) => {
     switch (name) {
@@ -188,7 +223,6 @@ const ProfileForm = () => {
         return value.trim() === '' ? 'This field is required' : '';
     }
   };
-  
   const handleCheckboxChange = (updatedIds: string[]) => {
     setSelectedStarIds(updatedIds);
   };
@@ -213,7 +247,6 @@ const ProfileForm = () => {
     birth_id: number;
     birth_star: string;
   }
-  
 
 
 
@@ -397,34 +430,49 @@ const ProfileForm = () => {
   const handleBrotherValueSelection = (value: string) => {
     setSelectedBrotherValue(value);
     setSelectedBrotherMarriedValue(''); // Reset selected Brother Married value
+    setBrotherError(''); // Clear error when a selection is made
 
     // Define the array of Brother Married values based on selected Brother value
     let values: string[] = [];
     switch (value) {
-      case '1':
-        values = ['0', '1'];
-        break;
-      case '2':
-        values = ['0', '1', '2'];
-        break;
-      case '3':
-        values = ['0', '1', '2', '3'];
-        break;
-      case '4':
-        values = ['0', '1', '2', '3', '4'];
-        break;
-      case '5+':
-        values = ['0', '1', '2', '3', '4', '5+'];
-        break;
-      default:
-        values = [];
+        case '1':
+            values = ['0', '1'];
+            break;
+        case '2':
+            values = ['0', '1', '2'];
+            break;
+        case '3':
+            values = ['0', '1', '2', '3'];
+            break;
+        case '4':
+            values = ['0', '1', '2', '3', '4'];
+            break;
+        case '5+':
+            values = ['0', '1', '2', '3', '4', '5+'];
+            break;
+        default:
+            values = [];
     }
 
     setBrotherMarriedValues(values);
+};
+
+  const validateBrotherSelection = () => {
+    if (selectedBrotherValue === '') {
+      setBrotherError('Please select the number of brothers.');
+      return false;
+    }
+    return true;
   };
 
+  // const handleSubmit = () => {
+  //   if (validateBrotherSelection()) {
+  //     // Proceed with form submission or other logic
+  //   }
+  // };
 
-  
+
+
 
 
   //sister
@@ -719,7 +767,12 @@ const ProfileForm = () => {
             <div className="flex flex-col gap-5">
               <div className="flex w-full flex-row gap-4">
                 <div className="w-2/4">
-                  <Input label={""} name="temp_profileid" onChange={(e) => handleInputChange(e, 'basicDetails')} />
+                  <Input
+                    label={""}
+                    name="temp_profileid"
+                    ref={refs.temp_profileid}
+                    onChange={(e) => handleInputChange(e, 'basicDetails')}
+                  />
                   {errors.temp_profileid && <span className="text-red-500">{errors.temp_profileid}</span>}
                 </div>
                 <div className="w-2/4 py-1">
@@ -728,6 +781,7 @@ const ProfileForm = () => {
                     type="radio"
                     value="Male"
                     name="Gender"
+                    ref={refs.Gender}
                     onChange={(e) => handleInputChange(e, 'basicDetails')}
                   />
                   <label className="text-black px-4">Male</label>
@@ -744,23 +798,39 @@ const ProfileForm = () => {
 
               <div className="flex w-full flex-row gap-4">
                 <div className="w-2/4">
-                  <Input label={"Mobile Number"} name="Mobile_no" onChange={(e) => handleInputChange(e, 'basicDetails')} />
+                  <Input
+                    label={"Mobile Number"}
+                    name="Mobile_no"
+                    ref={refs.Mobile_no}
+                    onChange={(e) => handleInputChange(e, 'basicDetails')}
+                  />
                   {errors.Mobile_no && <span className="text-red-500">{errors.Mobile_no}</span>}
                 </div>
                 <div className="w-2/4">
-                  <Input label={"Email"} name="EmailId" onChange={(e) => handleInputChange(e, 'basicDetails')} />
+                  <Input
+                    label={"Email"}
+                    name="EmailId"
+                    ref={refs.EmailId}
+                    onChange={(e) => handleInputChange(e, 'basicDetails')}
+                  />
                   {errors.EmailId && <span className="text-red-500">{errors.EmailId}</span>}
                 </div>
               </div>
               <div className="flex w-full flex-row gap-4">
                 <div className="w-full">
-                  <Input label={"Create Password"} name="Password" onChange={(e) => handleInputChange(e, 'basicDetails')} />
+                  <Input
+                    label={"Create Password"}
+                    name="Password"
+                    ref={refs.Password}
+                    onChange={(e) => handleInputChange(e, 'basicDetails')}
+                  />
                   {errors.Password && <span className="text-red-500">{errors.Password}</span>}
                 </div>
                 <div className="w-full">
                   <label className="block text-black font-medium mb-1">Select your Marital Status</label>
                   <select
                     name="Profile_marital_status"
+                    ref={refs.Profile_marital_status}
                     className="outline-none w-full px-4 py-2 border border-black rounded"
                     onChange={(e) => handleInputChange(e, 'basicDetails')}
                   >
@@ -776,24 +846,42 @@ const ProfileForm = () => {
 
               <div className="flex w-full flex-row gap-4">
                 <div className="w-2/4">
-                  <Input label={"Date of Birth"} type={"date"} name="Profile_dob" onChange={(e) => handleInputChange(e, 'basicDetails')} />
+                  <Input
+                    label={"Date of Birth"}
+                    type={"date"}
+                    name="Profile_dob"
+                    ref={refs.Profile_dob}
+                    onChange={(e) => handleInputChange(e, 'basicDetails')}
+                  />
                   {errors.Profile_dob && <span className="text-red-500">{errors.Profile_dob}</span>}
                 </div>
                 <div className="w-2/4">
-                  <Input label={"Complexion"} type={"text"} name="Profile_complexion" onChange={(e) => handleInputChange(e, 'basicDetails')} />
+                  <Input
+                    label={"Complexion"}
+                    type={"text"}
+                    name="Profile_complexion"
+                    ref={refs.Profile_complexion}
+                    onChange={(e) => handleInputChange(e, 'basicDetails')}
+                  />
                   {errors.Profile_complexion && <span className="text-red-500">{errors.Profile_complexion}</span>}
                 </div>
               </div>
 
               <div className="flex w-full flex-row gap-4">
                 <div className="w-full">
-                  <Input label={"Address"} name="Profile_address" onChange={(e) => handleInputChange(e, 'basicDetails')} />
+                  <Input
+                    label={"Address"}
+                    name="Profile_address"
+                    ref={refs.Profile_address}
+                    onChange={(e) => handleInputChange(e, 'basicDetails')}
+                  />
                   {errors.Profile_address && <span className="text-red-500">{errors.Profile_address}</span>}
                 </div>
                 <div className="w-full">
                   <label className="block text-black font-medium mb-1">Country</label>
                   <select
                     name="Profile_country"
+                    ref={refs.Profile_country}
                     className="outline-none w-full px-4 py-2 border border-black rounded"
                     onChange={(e) => handleInputChange(e, 'basicDetails')}
                   >
@@ -812,6 +900,7 @@ const ProfileForm = () => {
                   <label className="block text-black font-medium mb-1">State (Based on country selection)</label>
                   <select
                     name="Profile_state"
+                    ref={refs.Profile_state}
                     className="outline-none w-full px-4 py-2 border border-black rounded"
                     onChange={(e) => handleInputChange(e, 'basicDetails')}
                   >
@@ -829,6 +918,7 @@ const ProfileForm = () => {
                   <label className="block text-black font-medium mb-1">City</label>
                   <select
                     name="Profile_city"
+                    ref={refs.Profile_city}
                     className="outline-none w-full px-4 py-2 border border-black rounded"
                     onChange={(e) => handleInputChange(e, 'basicDetails')}
                   >
@@ -842,7 +932,13 @@ const ProfileForm = () => {
               </div>
               <div className="flex w-full flex-row gap-4">
                 <div className="w-full">
-                  <Input label={"Pincode"} type={"text"} name="Profile_pincode" onChange={(e) => handleInputChange(e, 'basicDetails')} />
+                  <Input
+                    label={"Pincode"}
+                    type={"text"}
+                    name="Profile_pincode"
+                    ref={refs.Profile_pincode}
+                    onChange={(e) => handleInputChange(e, 'basicDetails')}
+                  />
                   {errors.Profile_pincode && <span className="text-red-500">{errors.Profile_pincode}</span>}
                 </div>
               </div>
@@ -1034,42 +1130,44 @@ const ProfileForm = () => {
               <div className="flex w-full flex-row gap-4">
                 <div className="w-2/4 py-1">
                   <div className="mb-4">
-                    <label className="block text-black font-medium mb-1">Brother</label>
+                    <label className="block text-black font-medium mb-1">
+                      Brother
+                    </label>
                     <div className="w-full inline-flex rounded">
                       {['0', '1', '2', '3', '4', '5+'].map((value) => (
                         <button
                           key={value}
                           type="button"
-                          className={`w-full px-5 py-3 text-sm font-medium border ${selectedBrotherValue === value ? 'bg-blue-500 text-white' : ''
-                            }`}
+                          className={`w-full px-5 py-3 text-sm font-medium border ${selectedBrotherValue === value ? 'bg-blue-500 text-white' : ''}`}
                           onClick={() => handleBrotherValueSelection(value)}
                         >
                           {value}
                         </button>
                       ))}
                     </div>
+                    {brotherError && (
+                      <p className="text-red-500 text-sm mt-2">{brotherError}</p> // Display validation error
+                    )}
                   </div>
                 </div>
 
                 {parseInt(selectedBrotherValue) > 0 && (
                   <div className="mb-4 w-2/4">
-                    <label className="block text-black font-medium mb-1">Brother Married</label>
+                    <label className="block text-black font-medium mb-1">
+                      Brother Married
+                    </label>
                     <div className="w-full inline-flex rounded">
                       {brotherMarriedValues.map((value) => (
                         <button
                           key={value}
                           type="button"
-                          className={`w-full px-5 py-3 text-sm font-medium border ${selectedBrotherMarriedValue === value ? 'bg-blue-500 text-white' : 'bg-white text-black'
-                            }`}
+                          className={`w-full px-5 py-3 text-sm font-medium border ${selectedBrotherMarriedValue === value ? 'bg-blue-500 text-white' : 'bg-white text-black'}`}
                           onClick={() => setSelectedBrotherMarriedValue(value)}
                         >
                           {value}
                         </button>
                       ))}
                     </div>
-                    {brotherMarriedError && (
-                      <p className="text-red-500 text-sm mt-2">{brotherMarriedError}</p>
-                    )}
                   </div>
                 )}
               </div>
