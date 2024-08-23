@@ -3,9 +3,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
-from .serializers import ChangePasswordSerializer, ProfileEduDetailsSerializer, ProfileFamilyDetailsSerializer, ProfilePartnerPrefSerializer
+from .serializers import ChangePasswordSerializer, ProfileEduDetailsSerializer, ProfileFamilyDetailsSerializer, ProfileHoroscopeSerializer, ProfilePartnerPrefSerializer
 from rest_framework import viewsets
-from .models import Country, ProfileEduDetails, ProfileFamilyDetails, ProfilePartnerPref, State, District, Religion, Caste, ProfileHolder, MaritalStatus, Height, Complexion, ParentsOccupation, HighestEducation, UgDegree, AnnualIncome, PlaceOfBirth, BirthStar, Rasi, Lagnam, DasaBalance, FamilyType, FamilyStatus, FamilyValue, LoginDetailsTemp ,Get_profiledata
+from .models import Country, ProfileEduDetails, ProfileFamilyDetails, ProfileHoroscope, ProfilePartnerPref, State, District, Religion, Caste, ProfileHolder, MaritalStatus, Height, Complexion, ParentsOccupation, HighestEducation, UgDegree, AnnualIncome, PlaceOfBirth, BirthStar, Rasi, Lagnam, DasaBalance, FamilyType, FamilyStatus, FamilyValue, LoginDetailsTemp ,Get_profiledata
 from .serializers import CountrySerializer, StateSerializer, DistrictSerializer, ReligionSerializer, CasteSerializer, ProfileHolderSerializer, MaritalStatusSerializer, HeightSerializer, ComplexionSerializer, ParentsOccupationSerializer, HighestEducationSerializer, UgDegreeSerializer, AnnualIncomeSerializer, PlaceOfBirthSerializer, BirthStarSerializer, RasiSerializer, LagnamSerializer, DasaBalanceSerializer, FamilyTypeSerializer, FamilyStatusSerializer, FamilyValueSerializer, LoginDetailsTempSerializer,Getnewprofiledata
 from rest_framework.decorators import action
 from rest_framework import generics, filters
@@ -229,6 +229,11 @@ class ProfilePartnerPrefViewSet(viewsets.ModelViewSet):
     queryset = ProfilePartnerPref.objects.all()
     serializer_class = ProfilePartnerPrefSerializer
 
+
+
+class ProfileHoroscopeViewSet(viewsets.ModelViewSet):
+    queryset = ProfileHoroscope.objects.all()
+    serializer_class = ProfileHoroscopeSerializer
 
 
 

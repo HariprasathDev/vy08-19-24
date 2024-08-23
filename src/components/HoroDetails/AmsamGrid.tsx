@@ -1,12 +1,10 @@
-
-
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
+import { useLocation } from "react-router-dom";
 import { RiDraggable } from "react-icons/ri";
 import { AiOutlineClose } from "react-icons/ai";
 
 interface AmsamGridProps {
   centerLabel: string;
-  onAmsamContentsChange: (contents: string[][]) => void;
 }
 
 interface Label {
@@ -14,24 +12,63 @@ interface Label {
   name: string;
 }
 
-const AmsamGrid: React.FC<AmsamGridProps> = ({ centerLabel ,  onAmsamContentsChange}) => {
-  const initialLabels: Label[] = [
-    { id: 1, name: "Raghu/Rahu" },
-    { id: 2, name: "Mars/Chevai" },
-    { id: 3, name: "Jupiter/Guru" },
-    { id: 4, name: "Mercury/Budhan" },
-    { id: 5, name: "Saturn/Sani" },
-    { id: 6, name: "Lagnam" },
-    { id: 7, name: "Sun/Suriyan" },
-    { id: 8, name: "Venus/Sukran" },
-    { id: 9, name: "Moon/Chandran" },
-    { id: 10, name: "Kethu/Ketu" },
-  ];
+const AmsamGrid: React.FC<AmsamGridProps> = ({ centerLabel }) => {
+  const initialLabels: Label[] = useMemo(
+    () => [
+      { id: 1, name: "Sun/Suriyan" },
+      { id: 2, name: "Moon/Chandran" },
+      { id: 3, name: "Mars/Chevai" },
+      { id: 4, name: "Mercury/Budhan" },
+      { id: 5, name: "Jupiter/Guru" },
+      { id: 6, name: "Venus/Sukran" },
+      { id: 7, name: "Saturn/Sani" },
+      { id: 8, name: "Raghu/Rahu" },
+      { id: 9, name: "Kethu/Ketu" },
+      { id: 10, name: "Lagnam" },
+    ],
+    []
+  );
 
   const [labels, setLabels] = useState<Label[]>(initialLabels);
-  const [amsamContents, setAmsamContents] = useState<string[][]>(Array(12).fill([]));
+  const [amsamContents, setAmsamContents] = useState<string[][]>(
+    Array(12).fill([])
+  );
+  const location = useLocation();
 
-  const handleDragStart = (e: React.DragEvent<HTMLDivElement>, label: Label) => {
+  useEffect(() => {
+    const formattedDatamsamval = sessionStorage.getItem("formattedDatamsam");
+    if (formattedDatamsamval) {
+      console.log(
+        "Retrieved formattedDatamsam from sessionStorage:",
+        formattedDatamsamval
+      );
+
+      // Parse the formatted data
+      const data = formattedDatamsamval
+        .slice(1, -1)
+        .split(", ")
+        .map((grid) => {
+          const match = grid.match(/Grid \d+: (.+)/);
+          return match ? match[1].split(",").map((id) => parseInt(id, 10)) : [];
+        });
+
+      // Map ids to labels and set the amsam contents
+      const newAmsamContents = data.map((ids) => {
+        return ids
+          .map((id) => initialLabels.find((label) => label.id === id)?.name)
+          .filter(Boolean) as string[];
+      });
+
+      setAmsamContents(newAmsamContents);
+    } else {
+      console.log("No formattedDatamsam found in sessionStorage");
+    }
+  }, [location, initialLabels]);
+
+  const handleDragStart = (
+    e: React.DragEvent<HTMLDivElement>,
+    label: Label
+  ) => {
     e.dataTransfer.setData("labelId", label.id.toString());
     e.dataTransfer.setData("source", "amsam");
   };
@@ -40,19 +77,30 @@ const AmsamGrid: React.FC<AmsamGridProps> = ({ centerLabel ,  onAmsamContentsCha
     e.preventDefault();
   };
 
-  const handleDropRasiBox = (e: React.DragEvent<HTMLDivElement>, index: number) => {
+  const handleDropRasiBox = (
+    e: React.DragEvent<HTMLDivElement>,
+    index: number
+  ) => {
     e.preventDefault();
     const draggedLabelId = e.dataTransfer.getData("labelId");
     const source = e.dataTransfer.getData("source");
 
     if (source === "amsam" && draggedLabelId) {
-      const draggedLabel = labels.find((label) => label.id === parseInt(draggedLabelId));
-      if (draggedLabel && !amsamContents[index].includes(draggedLabel.name) && amsamContents[index].length < 6) {
+      const draggedLabel = labels.find(
+        (label) => label.id === parseInt(draggedLabelId, 10)
+      );
+      if (
+        draggedLabel &&
+        !amsamContents[index].includes(draggedLabel.name) &&
+        amsamContents[index].length < 6
+      ) {
         const newContents = [...amsamContents];
         newContents[index] = [...newContents[index], draggedLabel.name];
         setAmsamContents(newContents);
 
-        setLabels((prevLabels) => prevLabels.filter((label) => label.id !== draggedLabel.id));
+        setLabels((prevLabels) =>
+          prevLabels.filter((label) => label.id !== draggedLabel.id)
+        );
       }
     }
   };
@@ -63,33 +111,35 @@ const AmsamGrid: React.FC<AmsamGridProps> = ({ centerLabel ,  onAmsamContentsCha
     newContents[index].splice(labelIndex, 1);
     setAmsamContents(newContents);
 
-    const removedLabelObj = initialLabels.find((label) => label.name === removedLabel);
+    const removedLabelObj = initialLabels.find(
+      (label) => label.name === removedLabel
+    );
     if (removedLabelObj) {
       setLabels((prevLabels) => [...prevLabels, removedLabelObj]);
     }
   };
-  useEffect(() => {
-    onAmsamContentsChange(amsamContents);
-  }, [amsamContents, onAmsamContentsChange]);
+
+  const formatGridData = () => {
+    const formattedData = amsamContents
+      .map((contents, index) => {
+        const boxNumber = index + 1;
+        const ids = contents
+          .map((label) => initialLabels.find((l) => l.name === label)?.id)
+          .filter((id) => id !== undefined);
+        return `Grid ${boxNumber}: ${ids.length > 0 ? ids.join(",") : "empty"}`;
+      })
+      .join(", ");
+    return `{${formattedData}}`;
+  };
 
   useEffect(() => {
+    const formattedData = formatGridData();
     console.log("Amsam Contents:");
-    amsamContents.forEach((contents, index) => {
-      if (contents.length === 0) {
-        console.log(`Grid ${index + 1}: Empty`);
-      } else if (contents.length === 1) {
-        const labelId = initialLabels.find(label => label.name === contents[0])?.id;
-        console.log(`Grid ${index + 1}: ${labelId}`);
-      } else {
-        const ids = contents.map(label => {
-          const labelId = initialLabels.find(l => l.name === label)?.id;
-          return labelId || '';
-        });
-        console.log(`Grid ${index + 1}: [${ids.join(", ")}]`);
-      }
-    });
+    console.log(formattedData);
+
+    // Store formattedData in sessionStorage
+    sessionStorage.setItem("formattedData1", JSON.stringify(formattedData));
   }, [amsamContents]);
-  
 
   return (
     <div className="flex justify-start items-start bg-gray-200 space-x-16">
@@ -100,7 +150,7 @@ const AmsamGrid: React.FC<AmsamGridProps> = ({ centerLabel ,  onAmsamContentsCha
             key={index}
             draggable
             onDragStart={(e) => handleDragStart(e, label)}
-            className="flex items-center bg-red-600 text-white text-sm px-2 py-3 rounded text-center hover:cursor-grab"
+            className="flex items-center bg-redcolor1 text-white px-2 py-3 rounded text-center hover:cursor-grab"
           >
             <RiDraggable className="mr-2" />
             {label.name}
@@ -112,10 +162,24 @@ const AmsamGrid: React.FC<AmsamGridProps> = ({ centerLabel ,  onAmsamContentsCha
       <div className="">
         {/* Top Row */}
         <div className="col-span-3 grid grid-cols-4 gap-2">
-          {/* Render amsam-box with drag and drop functionality */}
-          {Array.from({ length: 12 }).map((_, index) => (
+          {/* Define positions for the grid in a clockwise manner */}
+          {[
+            { row: 1, col: 1 },
+            { row: 1, col: 2 },
+            { row: 1, col: 3 },
+            { row: 1, col: 4 },
+            { row: 2, col: 4 },
+            { row: 3, col: 4 },
+            { row: 4, col: 4 },
+            { row: 4, col: 3 },
+            { row: 4, col: 2 },
+            { row: 4, col: 1 },
+            { row: 3, col: 1 },
+            { row: 2, col: 1 },
+          ].map((pos, index) => (
             <div
               key={index}
+              style={{ gridRow: pos.row, gridColumn: pos.col }}
               onDrop={(e) => handleDropRasiBox(e, index)}
               onDragOver={handleDragOver}
               className="w-48 h-48 amsam-box rounded border border-footer-text-gray flex flex-col items-start justify-center gap-2"
@@ -123,7 +187,7 @@ const AmsamGrid: React.FC<AmsamGridProps> = ({ centerLabel ,  onAmsamContentsCha
               {amsamContents[index].map((label, labelIndex) => (
                 <div
                   key={labelIndex}
-                  className="w-32 h-auto mx-auto relative bg-red-600 text-white text-xs px-2 py-1 rounded text-center flex items-center justify-between"
+                  className="w-32 h-auto mx-auto relative bg-redcolor1 text-white px-2 py-1 rounded text-center flex items-center justify-between"
                 >
                   {label}
                   <AiOutlineClose
@@ -132,6 +196,9 @@ const AmsamGrid: React.FC<AmsamGridProps> = ({ centerLabel ,  onAmsamContentsCha
                   />
                 </div>
               ))}
+              {/* <div className="absolute top-0 left-0 m-1 text-xs font-bold text-gray-500">
+                {index + 1}
+              </div> */}
             </div>
           ))}
 

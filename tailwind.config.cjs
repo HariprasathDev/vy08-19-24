@@ -57,8 +57,8 @@ module.exports = {
         warning: '#FFA70B',
         PrimaryRed: '#ff00006e',
         yellow:'#ffe50036',
-        btnred:"#ff00006e"
-        
+        btnred:"#ff00006e",
+        redcolor1:'rgb(220 38 38)',
       },
       fontSize: {
         'title-xxl': ['44px', '55px'],

@@ -1,6 +1,6 @@
 # serializers.py
 from rest_framework import serializers
-from .models import PlaceOfBirth, BirthStar, ProfilePartnerPref, Rasi, Lagnam, DasaBalance, LoginDetailsTemp, FamilyType, FamilyStatus, FamilyValue, ProfileHolder, MaritalStatus, Height, Complexion, ParentsOccupation, HighestEducation, UgDegree, AnnualIncome, Country, State, District, Religion, Caste
+from .models import PlaceOfBirth, BirthStar, ProfileHoroscope, ProfilePartnerPref, Rasi, Lagnam, DasaBalance, LoginDetailsTemp, FamilyType, FamilyStatus, FamilyValue, ProfileHolder, MaritalStatus, Height, Complexion, ParentsOccupation, HighestEducation, UgDegree, AnnualIncome, Country, State, District, Religion, Caste
 from .models import Profile
 
 class ChangePasswordSerializer(serializers.Serializer):
@@ -157,6 +157,14 @@ class Getnewprofiledata(serializers.ModelSerializer):
         model = LoginDetails
         fields = '__all__' 
         
+
+
+
+class ProfileHoroscopeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProfileHoroscope
+        fields = '__all__'
+
         
         
 from rest_framework import viewsets

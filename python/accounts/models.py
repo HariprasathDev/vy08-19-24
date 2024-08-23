@@ -386,3 +386,27 @@ class ProfilePartnerPref(models.Model):
 
     class Meta:
         db_table = 'profile_partner_pref'
+
+
+
+class ProfileHoroscope(models.Model):
+    profile_id = models.CharField(max_length=50, unique=True, primary_key=True)
+    # lagnam_didi = models.CharField(max_length=50)
+    # birth_rasi_name = models.CharField(max_length=50)
+    # birthstar_name = models.TimeField()
+    place_of_birth = models.CharField(max_length=100)
+    chevvai_dosaham = models.CharField(max_length=50)
+    # other_horoscope_details = models.TextField()
+    # time_of_birth = models.CharField(max_length=50)
+    # amsa_kattam = models.TextField()
+    # rasi_kattam = models.TextField()
+    # horoscope_hints = models.TextField()
+    # dasa_balance = models.TextField()
+    # dasa_name = models.TextField()
+    # nalikai = models.TextField()
+    # ragu_dosham = models.TextField()
+  
+
+    class Meta:
+        db_table = 'profile_horoscope'
+

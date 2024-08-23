@@ -1,7 +1,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import (
-    Get_all_profiles, ProfilePartnerPrefViewSet, SignInView, ChangePasswordView, CountryViewSet, StateViewSet, DistrictViewSet,
+    Get_all_profiles, ProfileHoroscopeViewSet, ProfilePartnerPrefViewSet, SignInView, ChangePasswordView, CountryViewSet, StateViewSet, DistrictViewSet,
     ReligionViewSet, CasteViewSet, ProfileHolderViewSet, MaritalStatusViewSet, HeightViewSet,
     ComplexionViewSet, ParentsOccupationViewSet, HighestEducationViewSet, UgDegreeViewSet,
     AnnualIncomeViewSet, PlaceOfBirthViewSet, BirthStarViewSet, RasiViewSet, LagnamViewSet,
@@ -38,6 +38,7 @@ router.register(r'logindetails', LoginDetailsViewSet)
 router.register(r'profile-familydetails', ProfileFamilyDetailsViewSet)
 router.register(r'profile-edudetails', ProfileEduDetailsViewSet)
 router.register(r'profile-partner-pref', ProfilePartnerPrefViewSet)
+router.register(r'profile-horoscope', ProfileHoroscopeViewSet)
 
 # router.register(r'Newprofile_get', Newprofile_get)
 
