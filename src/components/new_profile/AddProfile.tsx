@@ -52,6 +52,7 @@ const schema = z.object({
   pref_height_from: z.string().nonempty('time Of Birth are required'),
   place_of_birth: z.string().nonempty('time Of Birth are required'),
   chevvai_dosaham: z.string().nonempty('time Of Birth are required'),
+  // amsa_kattam: z.string().nonempty('time Of Birth are required'),
 });
 
 
@@ -141,7 +142,7 @@ const ProfileForm = () => {
 
 
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data: any) => {
     console.log("Form Submitted Data:", data); // Debug log for form data
 
     try {
@@ -301,13 +302,6 @@ const ProfileForm = () => {
 
 
 
-
-
-
-
-
-
-
   useEffect(() => {
     const fetchMaritalStatuses = async () => {
       try {
@@ -433,7 +427,7 @@ const ProfileForm = () => {
 
 
 
-  
+
   //complextion
   useEffect(() => {
     const fetchComplexionStatus = async () => {
@@ -450,7 +444,7 @@ const ProfileForm = () => {
 
 
 
-  
+
   //Birthstar
   useEffect(() => {
     const fetchBirthStar = async () => {
@@ -857,7 +851,7 @@ const ProfileForm = () => {
               <div className="flex w-full flex-row gap-4">
                 <div className="w-full">
                   <label className="block text-black font-medium mb-1">
-                   complexion
+                    complexion
                   </label>
                   <select
                     name="Profile_complexion"
@@ -924,11 +918,11 @@ const ProfileForm = () => {
                 </div>
 
                 <div className="w-full">
-                <Input label={"City"} type={"text"} name="Profile_city" {...register('Profile_city')} />
-                {errors.Profile_city && <span className="text-red-500">{errors.Profile_city.message}</span>}
-                    
+                  <Input label={"City"} type={"text"} name="Profile_city" {...register('Profile_city')} />
+                  {errors.Profile_city && <span className="text-red-500">{errors.Profile_city.message}</span>}
+
                 </div>
-                
+
               </div>
               <div className="flex w-full flex-row gap-4">
                 <div className="w-full">
@@ -1443,13 +1437,17 @@ const ProfileForm = () => {
                 </div>
               </div>
 
+
+
               <div className="flex w-full flex-row gap-4">
                 <div className='w-full'>
-                  <label htmlFor="birthStar" className="block text-black font-medium mb-1">Birth Star</label>
+                  <label htmlFor="birthStar" className="block text-black font-medium mb-1">
+                    Birth Star
+                  </label>
                   <select
-
                     id="birthStar"
                     {...register('birthStar')}
+                    onChange={handleBirthStarChange}
                     className="outline-none w-full px-4 py-2 border border-black rounded"
                   >
                     <option value="" disabled>
@@ -1469,11 +1467,12 @@ const ProfileForm = () => {
 
 
                 <div className='w-full'>
+
                   <label htmlFor="rasi" className='block text-black font-medium mb-1'>Rasi</label>
                   <select
                     id="rasi"
-                    {...register('rasi')}
                     className="outline-none w-full px-4 py-2 border border-black rounded"
+                    
                   >
                     <option value="" selected disabled>
                       -- Select your Rasi --

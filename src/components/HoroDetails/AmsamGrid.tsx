@@ -132,6 +132,45 @@ const AmsamGrid: React.FC<AmsamGridProps> = ({ centerLabel }) => {
     return `{${formattedData}}`;
   };
 
+  const getCSRFToken = () => {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== "") {
+      const cookies = document.cookie.split(";");
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.substring(0, 10) === "csrftoken=") {
+          cookieValue = decodeURIComponent(cookie.substring(10));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  };
+
+  const storeAmsaKattamInDatabase = async (formattedData: string) => {
+    try {
+      const csrfToken = getCSRFToken();
+      const response = await fetch("http://localhost:8000/api/profile-horoscope/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrfToken || "",
+        },
+        body: JSON.stringify({ amsa_kattam: formattedData }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Server Error:", errorData);
+        throw new Error("Failed to store data");
+      }
+      console.log("Amsa Kattam data stored successfully");
+    } catch (error) {
+      console.error("Error storing Amsa Kattam data:", error);
+    }
+  };
+
+
   useEffect(() => {
     const formattedData = formatGridData();
     console.log("Amsam Contents:");
@@ -139,6 +178,9 @@ const AmsamGrid: React.FC<AmsamGridProps> = ({ centerLabel }) => {
 
     // Store formattedData in sessionStorage
     sessionStorage.setItem("formattedData1", JSON.stringify(formattedData));
+
+    // Store the value in the database
+    storeAmsaKattamInDatabase(formattedData);
   }, [amsamContents]);
 
   return (
